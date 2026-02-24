@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MechE 24-101 Cheat Sheet</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0f0f0f;
+    color: #e0e0e0;
+    padding: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.8em;
+    margin-bottom: 6px;
+    color: #fff;
+  }
+  .subtitle {
+    text-align: center;
+    color: #888;
+    margin-bottom: 24px;
+    font-size: 0.9em;
+  }
+  .section {
+    background: #1a1a2e;
+    border: 1px solid #2a2a4a;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .section h2 {
+    color: #7b8cff;
+    font-size: 1.2em;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #2a2a4a;
+    padding-bottom: 8px;
+  }
+  .formula-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #1f1f3a;
+  }
+  .formula-row:last-child { border-bottom: none; }
+  .formula-label {
+    flex: 0 0 200px;
+    color: #aaa;
+    font-size: 0.9em;
+  }
+  .formula-math {
+    flex: 1;
+    font-size: 1.1em;
+  }
+  .formula-note {
+    flex: 0 0 220px;
+    color: #666;
+    font-size: 0.8em;
+    font-style: italic;
+    padding-left: 12px;
+  }
+  .highlight {
+    background: #2a1a3e;
+    border-color: #5a3a8a;
+  }
+  .tip {
+    background: #1a2e1a;
+    border: 1px solid #2a4a2a;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin: 8px 0;
+    font-size: 0.85em;
+    color: #8fbc8f;
+  }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 700px) {
+    .two-col { grid-template-columns: 1fr; }
+    .formula-row { flex-wrap: wrap; }
+    .formula-note { flex: 1 0 100%; padding-left: 0; padding-top: 4px; }
+  }
+  .badge {
+    display: inline-block;
+    background: #7b8cff22;
+    color: #7b8cff;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.75em;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<h1>📐 MechE 24-101 Exam Cheat Sheet</h1>
+<p class="subtitle">Everything NOT on the reference sheet — Spring 2026</p>
+
+<!-- EQUILIBRIUM -->
+<div class="section">
+  <h2>⚖️ Equilibrium</h2>
+  <div class="formula-row">
+    <div class="formula-label">Equilibrium Equations</div>
+    <div class="formula-math">$$\sum F_x = 0 \qquad \sum F_y = 0 \qquad \sum M_O = 0$$</div>
+  </div>
+  <div class="formula-row">
+    <div class="formula-label">Resultant Force</div>
+    <div class="formula-math">$$R = \sqrt{F_x^2 + F_y^2}$$</div>
+    <div class="formula-note">Direction: θ = tan⁻¹(Fy/Fx)</div>
+  </div>
+  <div class="formula-row">
+    <div class="formula-label">Moment about O</div>
+    <div class="formula-math">$$M_O = r_x F_y - r_y F_x$$</div>
+    <div class="formula-note">CCW = positive</div>
+  </div>
+  <div class="formula-row">
+    <div class="formula-label">Distributed Load Resultant</div>
+    <div class="formula-math">$$F_R = w \cdot L$$</div>
+    <div class="formula-note">Acts at centroid (midpoint if uniform)</div>
+  </div>
+  <div class="tip">💡 <b>Two-force members:</b> Force acts along the line connecting the two pin points. Only tension or compression — pick a smart moment point to eliminate unknowns.</div>
+</div>
+
+<!-- FBD -->
+<div class="section">
+  <h2>📋 Free Body Diagram Checklist</h2>
+  <div class="two-col">
+    <div>
+      <p>1. Isolate body, draw shape</p>
+      <p>2. Draw coordinate system</p>
+      <p>3. Add ALL forces (applied, weight, reactions)</p>
+      <p>4. Label unknowns with assumed directions</p>
+    </div>
+    <div>
+      <p><b>Pin:</b> → $F_x$ and $F_y$ unknowns</p>
+      <p><b>Fixed:</b> → $F_x$, $F_y$, and $M$</p>
+      <p><b>Roller:</b> → one force ⊥ surface</p>
+      <p><b>Cable/link:</b> → force along element</p>
+    </div>
+  </div>
+</div>
+
+<!-- STRESS & STRAIN -->
+<div class="section highlight">
+  <h2>🔩 Stress, Strain & Deformation <span class="badge">HIGH YIELD</span></h2>
+  <div class="formula-row">
+    <div class="formula-label">Normal Stress</div>
+    <div class="formula-math">$$\sigma = \frac{F}{A}$$</div>
+    <div class="formula-note">Units: psi, Pa, ksi</div>
+  </div>
+  <div class="formula-row">
+    <div class="formula-label">Normal Strain</div>
+    <div class="formula-math">$$\varepsilon = \frac{\delta}{L}$$</div>
+    <div class="formula-note">Unitless (or in/in, mm/mm)</div>
+  </div>
+  <div class="formula-row">
+    <div class="formula-label">Hooke's Law</div>
+    <div class="formula-math">$$\sigma = E \cdot \varepsilon$$</div>
+    <div class="formula-note">E = modulus of elasticity</div>
+  </div>
+  <div class="formula-row" style="background:#2a1a3e; border-radius:8px; padding:12px;">
+    <div class="formula-label"><b>⭐ Deformation</b></div>
+    <div class="formula-math">$$\boxed{\delta = \frac{F \cdot L}{A \cdot E}}$$</div>
+    <div class="formula-note"><b>Key formula for Prob 2</b></div>
+  </div>
+  <div class="formula-row">
+    <div class="formula-label">Poisson's Ratio</div>
+    <div class="formula-math">$$\nu = -\frac{\varepsilon_{\text{lateral}}}{\varepsilon_{\text{axial}}}$$</div>
+    <div class="formula-note">Ratio of transverse to axial strain</div>
+  </div>
+</div>
+
+<!-- SHEAR & FOS -->
+<div class="section highlight">
+  <h2>📌 Shear Stress & Factor of Safety <span class="badge">HIGH YIELD</span></h2>
+  <div class="formula-row">
+    <div class="formula-label">Shear Stress</div>
+    <div class="formula-math">$$\tau = \frac{F}{A}$$</div>
+    <div class="formula-note">A = shear area</div>
+  </div>
+  <div class="formula-row">
+    <div class="formula-label">Single Shear</div>
+    <div class="formula-math">$$\tau = \frac{F}{A} \qquad A = \frac{\pi d^2}{4}$$</div>
+    <div class="formula-note">One shear plane</div>
+  </div>
+  <div class="formula-row">
+    <div class="formula-label">Double Shear</div>
+    <div class="formula-math">$$\tau = \frac{F}{2A} \qquad A = \frac{\pi d^2}{4}$$</div>
+    <div class="formula-note">Force split across 2 planes</div>
+  </div>
+  <div class="formula-row" style="background:#2a1a3e; border-radius:8px; padding:12px;">
+    <div class="formula-label"><b>⭐ Factor of Safety</b></div>
+    <div class="formula-math">$$\boxed{\text{FOS} = \frac{\sigma_{\text{yield}}}{\sigma_{\text{actual}}}}$$</div>
+    <div class="formula-note"><b>Same for shear: FOS = τ_y / τ_actual</b></div>
+  </div>
+  <div class="tip">💡 <b>Prob 3 pattern:</b> Find force via equilibrium → compute shear stress on pin → set FOS = σ_y / σ → solve for diameter d. For double shear: σ = F / (2 × πd²/4)</div>
+</div>
+
+<!-- GEARS -->
+<div class="section">
+  <h2>⚙️ Gear Trains</h2>
+  <div class="formula-row">
+    <div class="formula-label">Meshing Gears</div>
+    <div class="formula-math">$$\omega_1 \cdot N_1 = \omega_2 \cdot N_2$$</div>
+    <div class="formula-note">N = number of teeth</div>
+  </div>
+  <div class="formula-row">
+    <div class="formula-label">Speed Ratio</div>
+    <div class="formula-math">$$\frac{\omega_{\text{out}}}{\omega_{\text{in}}} = \frac{N_{\text{driver}}}{N_{\text{driven}}} \text{ (each stage)}$$</div>
+    <div class="formula-note">Gears on same shaft → same ω</div>
+  </div>
+  <div class="formula-row">
+    <div class="formula-label">Overall Gear Ratio</div>
+    <div class="formula-math">$$GR = \frac{N_{A}}{N_{B}} \times \frac{N_{C}}{N_{D}} \times \cdots$$</div>
+    <div class="formula-note">Multiply each mesh stage</div>
+  </div>
+  <div class="tip">💡 <b>Direction:</b> External mesh → reverses rotation. Internal mesh → same direction.</div>
+</div>
+
+<!-- POWER & TORQUE -->
+<div class="section">
+  <h2>🔋 Power & Torque</h2>
+  <div class="formula-row">
+    <div class="formula-label">Power</div>
+    <div class="formula-math">$$P = \tau \cdot \omega$$</div>
+    <div class="formula-note">ω must be in rad/s!</div>
+  </div>
+  <div class="formula-row">
+    <div class="formula-label">RPM → rad/s</div>
+    <div class="formula-math">$$\omega = \text{rpm} \times \frac{2\pi}{60}$$</div>
+    <div class="formula-note"></div>
+  </div>
+  <div class="formula-row">
+    <div class="formula-label">No Power Loss</div>
+    <div class="formula-math">$$P_{\text{in}} = P_{\text{out}} \implies \tau_{\text{out}} = \frac{P}{\omega_{\text{out}}}$$</div>
+    <div class="formula-note">Key for gear train power problems</div>
+  </div>
+</div>
+
+<!-- UNITS -->
+<div class="section">
+  <h2>📏 Key Units (NOT on ref sheet)</h2>
+  <div class="two-col">
+    <div>
+      <div class="formula-row">
+        <div class="formula-label">1 kip</div>
+        <div class="formula-math">= 1000 lb</div>
+      </div>
+      <div class="formula-row">
+        <div class="formula-label">1 ksi</div>
+        <div class="formula-math">= 1000 psi</div>
+      </div>
+    </div>
+    <div>
+      <div class="formula-row">
+        <div class="formula-label">1 ft</div>
+        <div class="formula-math">= 12 in</div>
+      </div>
+      <div class="formula-row">
+        <div class="formula-label">Area of circle</div>
+        <div class="formula-math">$A = \frac{\pi d^2}{4}$</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  });
+</script>
+</body>
+</html>
