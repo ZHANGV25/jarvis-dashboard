@@ -144,7 +144,11 @@ function Header({ lastRefresh }: { lastRefresh: Date | null }) {
             </h1>
             <p className="text-[11px] text-zinc-400 font-mono">
               {lastRefresh
-                ? `Updated ${lastRefresh.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+                ? `Updated ${lastRefresh.toLocaleTimeString([], { 
+                    hour: "2-digit", 
+                    minute: "2-digit",
+                    timeZone: "America/New_York"
+                  })} EST`
                 : "Connecting..."}
             </p>
           </div>
@@ -230,6 +234,7 @@ function CalendarPanel() {
                   weekday: "short",
                   hour: "numeric",
                   minute: "2-digit",
+                  timeZone: "America/New_York"
                 })
               : "TBD";
             return (
@@ -238,7 +243,7 @@ function CalendarPanel() {
                 className="flex items-center gap-3 py-2 px-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50"
               >
                 <span className="text-[12px] font-mono text-zinc-400 whitespace-nowrap min-w-[85px]">
-                  {time}
+                  {time} EST
                 </span>
                 <span className="text-[13px] text-zinc-700 dark:text-zinc-300 truncate">
                   {e.summary || "Untitled"}
@@ -344,7 +349,8 @@ function CronPanel() {
                   {new Date(c.nextRun).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
-                  })}
+                    timeZone: "America/New_York"
+                  })} EST
                 </span>
               )}
             </div>
@@ -462,6 +468,186 @@ function QuickActionsPanel() {
   );
 }
 
+/* ─── Token Usage Panel ─── */
+
+function TokenUsagePanel() {
+  const { data, loading } = useFetch<Any>("/api/token-usage");
+  const [showCost, setShowCost] = useState(false);
+  const [selectedTab, setSelectedTab] = useState<"overview" | "daily" | "models" | "types">("overview");
+  
+  if (loading && !data) {
+    return (
+      <Panel icon="🔢" title="Token Usage" span={2}>
+        <Shimmer />
+      </Panel>
+    );
+  }
+
+  const formatNumber = (num: number) => num.toLocaleString();
+  const formatCost = (cost: number) => `$${cost.toFixed(4)}`;
+  
+  const TabButton = ({ id, label, active, onClick }: { id: string; label: string; active: boolean; onClick: () => void }) => (
+    <button
+      onClick={onClick}
+      className={`px-3 py-1.5 text-[12px] font-medium rounded-lg transition-colors ${
+        active 
+          ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900" 
+          : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+      }`}
+    >
+      {label}
+    </button>
+  );
+
+  return (
+    <Panel icon="🔢" title="Token Usage" span={2}>
+      <div className="space-y-4">
+        {/* Header Controls */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <TabButton id="overview" label="Overview" active={selectedTab === "overview"} onClick={() => setSelectedTab("overview")} />
+            <TabButton id="daily" label="Daily" active={selectedTab === "daily"} onClick={() => setSelectedTab("daily")} />
+            <TabButton id="models" label="Models" active={selectedTab === "models"} onClick={() => setSelectedTab("models")} />
+            <TabButton id="types" label="Types" active={selectedTab === "types"} onClick={() => setSelectedTab("types")} />
+          </div>
+          <button
+            onClick={() => setShowCost(!showCost)}
+            className="px-3 py-1.5 text-[12px] font-medium rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+          >
+            {showCost ? "$ Cost" : "# Tokens"}
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="max-h-[280px] overflow-y-auto">
+          {selectedTab === "overview" && (
+            <div className="space-y-2">
+              <Stat 
+                label="Total Tokens" 
+                value={formatNumber(data?.totals?.totalTokens || 0)} 
+                mono 
+              />
+              <Stat 
+                label="Input Tokens" 
+                value={formatNumber(data?.totals?.inputTokens || 0)} 
+                mono 
+              />
+              <Stat 
+                label="Output Tokens" 
+                value={formatNumber(data?.totals?.outputTokens || 0)} 
+                mono 
+              />
+              <Stat 
+                label="Total Cost" 
+                value={formatCost(data?.totals?.cost || 0)} 
+                mono 
+                color="text-emerald-600 dark:text-emerald-400"
+              />
+              <Stat 
+                label="Sessions" 
+                value={formatNumber(data?.totals?.sessions || 0)} 
+              />
+            </div>
+          )}
+
+          {selectedTab === "daily" && (
+            <div className="space-y-1.5">
+              {data?.byDate?.slice(0, 10).map((day: Any) => (
+                <div
+                  key={day.date}
+                  className="flex items-center justify-between py-2 px-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
+                      {new Date(day.date + 'T12:00:00').toLocaleDateString(undefined, { 
+                        month: "short", 
+                        day: "numeric",
+                        weekday: "short",
+                        timeZone: "America/New_York"
+                      })} EST
+                    </p>
+                    <p className="text-[11px] text-zinc-400">
+                      {day.sessions} sessions
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[13px] font-mono text-zinc-700 dark:text-zinc-300">
+                      {showCost ? formatCost(day.cost) : formatNumber(day.totalTokens)}
+                    </p>
+                    <p className="text-[11px] text-zinc-400 font-mono">
+                      {showCost ? `${formatNumber(day.totalTokens)} tokens` : formatCost(day.cost)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {selectedTab === "models" && (
+            <div className="space-y-1.5">
+              {Object.entries(data?.byModel || {})
+                .sort(([,a], [,b]) => (b as any).totalTokens - (a as any).totalTokens)
+                .map(([model, stats]: [string, any]) => (
+                <div
+                  key={model}
+                  className="flex items-center justify-between py-2 px-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
+                      {model}
+                    </p>
+                    <p className="text-[11px] text-zinc-400">
+                      {stats.sessions} sessions
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[13px] font-mono text-zinc-700 dark:text-zinc-300">
+                      {showCost ? formatCost(stats.cost) : formatNumber(stats.inputTokens + stats.outputTokens)}
+                    </p>
+                    <p className="text-[11px] text-zinc-400 font-mono">
+                      {showCost ? `${formatNumber(stats.inputTokens + stats.outputTokens)} tokens` : formatCost(stats.cost)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {selectedTab === "types" && (
+            <div className="space-y-1.5">
+              {Object.entries(data?.byType || {})
+                .sort(([,a], [,b]) => (b as any).totalTokens - (a as any).totalTokens)
+                .map(([type, stats]: [string, any]) => (
+                <div
+                  key={type}
+                  className="flex items-center justify-between py-2 px-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
+                      {type}
+                    </p>
+                    <p className="text-[11px] text-zinc-400">
+                      {stats.sessions} sessions
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[13px] font-mono text-zinc-700 dark:text-zinc-300">
+                      {showCost ? formatCost(stats.cost) : formatNumber(stats.inputTokens + stats.outputTokens)}
+                    </p>
+                    <p className="text-[11px] text-zinc-400 font-mono">
+                      {showCost ? `${formatNumber(stats.inputTokens + stats.outputTokens)} tokens` : formatCost(stats.cost)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
 /* ─── Activity Log Panel ─── */
 
 function ActivityLogPanel() {
@@ -523,6 +709,7 @@ export default function Dashboard() {
           <EmailPanel />
           <CalendarPanel />
           <ServerHealthPanel />
+          <TokenUsagePanel />
           <CronPanel />
           <GmailWatchPanel />
           <QuickActionsPanel />
